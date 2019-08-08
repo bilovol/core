@@ -1,14 +1,16 @@
 @extends('layout')
 @section('content')
-    @include('component/menu')
-    <div id="app" class="container pt-5">
-        <h1 class="h5 font-weight-bold">Подключение</h1>
-        <p>Поключение к сервису SendPulse</p>
-        <connect
-            title="Детали авторизации API SendPulse REST"
-            description="Данные авторизации можно найти на странице"
-            btn-check-connect-title="Check connect"
-            btn-save-title="Save"
-        ></connect>
+    <div id="app" class=" twocolordiv">
+        <div id="app" class="container pt-5">
+            <div class="row justify-content-center align-items-center" style="height: 80vh;">
+                <sp-connect
+                    title="Подключение"
+                    description="Данные авторизации можно найти на странице"
+                    btn-connect-title="Connect"
+                ></sp-connect>
+            </div>
+
+
+        </div>
     </div>
 @endsection

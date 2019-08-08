@@ -15,20 +15,14 @@ Route::get('/', function () {
     return view('welcome');
 });
 
-Route::get('/firstConnect', function () {
-    return view('page.firstConnect');
-});
-
 // CONNECT
 Route::prefix('/connect')->group(function () {
     Route::get('/', function () {
         return view('page.connect');
-    });
-    Route::get('/first', function () {
-        return view('page.firstConnect');
-    });
-    Route::get('/get', 'ConnectController@getConnect');
-    Route::post('/set', 'ConnectController@setConnect');
+    })->middleware('valid-connect');
+    Route::get('/get', 'ConnectController@getConnect')->middleware('valid-connect');
+    Route::post('/set', 'ConnectController@setConnect')->middleware('valid-connect');
+    Route::get('/drop', 'ConnectController@disconnect')->middleware('valid-connect');
 });
 
 
@@ -36,9 +30,9 @@ Route::prefix('/connect')->group(function () {
 Route::prefix('/synсronization')->group(function () {
     Route::get('/', function () {
         return view('page.sync');
-    });
-    Route::get('/get', 'SyncController@getSync');
-    Route::post('/set', 'SyncController@setSync');
+    })->middleware('valid-connect')->middleware('check-sp-connect');
+    Route::get('/get', 'SyncController@getSync')->middleware('valid-connect');
+    Route::post('/set', 'SyncController@setSync')->middleware('valid-connect');
 });
 
 
@@ -46,7 +40,7 @@ Route::prefix('/synсronization')->group(function () {
 Route::prefix('/export')->group(function () {
     Route::get('/', function () {
         return view('page.export');
-    });
-    Route::get('/get', 'ExportController@getData');
-    Route::post('/set', 'ExportController@doExport');
+    })->middleware('valid-connect')->middleware('check-sp-connect');
+    Route::get('/get', 'ExportController@getData')->middleware('valid-connect');
+    Route::post('/set', 'ExportController@doExport')->middleware('valid-connect');
 });

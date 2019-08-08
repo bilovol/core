@@ -36,7 +36,17 @@ class ConnectController extends Controller
         }
 
 
-
         return response('Done!');
+    }
+
+    public function disconnect(Request $request)
+    {
+        $SPConnect = $request->get('connect');
+
+        $SPConnect->secretId = null;
+        $SPConnect->secretKey = null;
+        $SPConnect->save();
+
+        return redirect('/connect');
     }
 }

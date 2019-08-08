@@ -10,13 +10,12 @@ window.Vue = require('vue');
 
 
 
-Vue.component('export', require('./components/export/ExportComponent.vue').default);
+Vue.component('export', require('./components/ExportComponent.vue').default);
 
-Vue.component('connect', require('./components/connect/ConnectComponent.vue').default);
-Vue.component('first-connect', require('./components/connect/FirstConnect.vue').default);
+Vue.component('sp-connect', require('./components/SPConnectComponent.vue').default);
 
-Vue.component('synсronization', require('./components/syncronization/SynсronizationComponent.vue').default);
-Vue.component('synс-item', require('./components/syncronization/SyncItem.vue').default);
+Vue.component('synсronization', require('./components/SynсronizationComponent.vue').default);
+Vue.component('synс-item', require('./components/SyncItem.vue').default);
 
 const app = new Vue({
     el: '#app',

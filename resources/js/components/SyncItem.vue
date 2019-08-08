@@ -56,15 +56,14 @@
 
         data() {
             return {
-                loading: false,
                 changed: false,
                 availableFields: [],
                 fieldsStorage: [],
                 eventFields: this.event.fields,
             }
         },
+
         created() {
-            console.log(this.event.fields);
             if (!this.event.fields) {
                 this.changed = true;
                 this.eventFields = [];
@@ -75,14 +74,17 @@
                 if (this.eventFields.indexOf(a.key) !== -1) {
                     newField.selected = true;
                 }
+
                 return newField;
             });
 
         },
+
         computed: {
             selectedFields: function () {
                 return this.fieldsStorage.filter(field => field.selected);
             },
+
             unselectedFields: function () {
                 return this.fieldsStorage.filter(field => !field.selected);
             }
@@ -90,27 +92,30 @@
 
         methods: {
             selectField(field) {
-                field.selected = true;
+                this.$set(field, 'selected', true);
             },
+
             unSelectField(field) {
-                field.selected = false;
+                this.$set(field, 'selected', false);
             },
+
             edit() {
                 this.changed = true;
             },
+
             save() {
                 axios.post('/synсronization/set', {
                     activeFields: this.fieldsStorage.filter(field => field.selected),
                     activeBook: this.activeBook,
-                    title: this.title,
+                    event: this.event,
                 }).then(response => {
-                    console.log(response);
+                    console.log(response.data);
+                    this.changed = false;
                 }).catch(e => {
-                    console.log(e.response);
+                    console.log(e.response.data);
                 });
-
-                this.changed = false;
             },
+
             remove() {
                 this.event.splice(1, 1);
             }

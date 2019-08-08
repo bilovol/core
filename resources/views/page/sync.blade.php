@@ -4,6 +4,11 @@
     <div id="app" class="container pt-5">
         <h1 class="h5 font-weight-bold">Синхронизация</h1>
         <p>Автоматический экспорт контактов в книгу SendPulse</p>
-        <synсronization></synсronization>
+        <synсronization
+            table-event-title='Событие'
+            table-book-title='Книга'
+            table-fields-title='Поля'
+            btn-add-event-title="Добавить событие"
+        ></synсronization>
     </div>
 @endsection

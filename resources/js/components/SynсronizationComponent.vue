@@ -10,10 +10,9 @@
             <table v-if="activeEvents !== null" class="table">
                 <thead>
                 <tr>
-                    <th scope="col">Событие</th>
-                    <th scope="col">Книга</th>
-                    <th scope="col" class="text-right">Поля</th>
-
+                    <th scope="col">{{ tableEventTitle }}</th>
+                    <th scope="col">{{ tableBookTitle }}</th>
+                    <th scope="col" class="text-right">{{ tableFieldsTitle }}</th>
                 </tr>
                 </thead>
                 <tbody>
@@ -30,7 +29,7 @@
         <div v-if="!loading" class="pt-3">
             <button type="button" class="btn btn-secondary float-left" data-toggle="dropdown"
                     aria-haspopup="true" aria-expanded="false">
-                <span class="mdi mdi-plus"></span> Добавить событие
+                <span class="mdi mdi-plus"></span> {{ btnAddEventTitle }}
             </button>
             <div class="dropdown-menu">
                 <li v-for="event in events" class="dropdown-item" @click="selectEvent(event)">
@@ -46,6 +45,14 @@
 
     export default {
         components: {SyncItem},
+
+        props: {
+            tableEventTitle: String,
+            tableBookTitle: String,
+            tableFieldsTitle: String,
+            btnAddEventTitle: String,
+        },
+
         data() {
             return {
                 loading: true,
@@ -60,23 +67,22 @@
         created() {
             this.fetchData();
         },
+
         methods: {
             fetchData() {
-                axios.get('/synсronization/get')
-                    .then(response => {
-                            this.events = response.data.events;
-                            this.activeEvents = response.data.activeEvents;
-                            this.fields = response.data.fields;
-                            this.books = response.data.books;
-                        }
-                    ).catch(function (e) {
+                axios.get('/synсronization/get').then(response => {
+                    this.events = response.data.events;
+                    this.activeEvents = response.data.activeEvents;
+                    this.fields = response.data.fields;
+                    this.books = response.data.books;
+                    this.loading = false;
+                }).catch(function (e) {
+                    this.loading = false;
                     console.log(e.response);
                 });
-                this.loading = false;
             },
 
             selectEvent(event) {
-                this.toast = 'Получил данные';
                 this.activeEvents.push(event)
             },
         }
