@@ -32,7 +32,7 @@ Route::prefix('/synсronization')->group(function () {
     })->middleware('valid-connect')->middleware('check-sp-connect');
     Route::get('/get', 'SyncController@getSync')->middleware('valid-connect');
     Route::post('/set', 'SyncController@setSync')->middleware('valid-connect');
-    Route::post('/delete','SyncController@deleteSync')->middleware('valid-connect');
+    Route::post('/delete', 'SyncController@deleteSync')->middleware('valid-connect');
 });
 
 
@@ -44,3 +44,6 @@ Route::prefix('/export')->group(function () {
     Route::get('/get', 'ExportController@getData')->middleware('valid-connect');
     Route::post('/set', 'ExportController@doExport')->middleware('valid-connect');
 });
+
+//BX24
+Route::post('/login','BitrixController@login');
