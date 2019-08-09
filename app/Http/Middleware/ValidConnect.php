@@ -11,7 +11,7 @@ class ValidConnect
     {
         $connect = Connect::where('id', 1)->first();
         if (empty($connect)) {
-            echo 'redirect homepage';
+            return redirect('/');
         }
 
         $request->attributes->add(['connect' => $connect]);
