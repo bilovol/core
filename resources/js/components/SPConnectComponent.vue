@@ -8,16 +8,16 @@
                     <a class="link" target="_blank" href="https://login.sendpulse.com/settings/#api">https://login.sendpulse.com/settings/#api</a>
                 </small>
             </div>
-            <div v-if="error" class="alert alert-warning small" role="alert">
-                {{error}}
+            <div v-if="error" class="alert alert-warning  error" role="alert">
+                <span class="mdi mdi-bell-alert"></span> {{error}}
             </div>
             <div class="form-group pt-2">
                 <label>SecretId</label>
-                <input type="text" id="secretId" class="form-control" placeholder="SecretId" v-model="secretId">
+                <input type="text" id="secretId" class="form-control" v-model="secretId">
             </div>
             <div class="form-group pt-2">
                 <label>SecretKey</label>
-                <input type="text" id="secretKey" class="form-control" placeholder="SecretKey" v-model="secretKey">
+                <input type="text" id="secretKey" class="form-control" v-model="secretKey">
             </div>
             <div class="text-center py-2">
                 <button @click="save" class="btn btn-main" :disabled="sending">
@@ -45,7 +45,7 @@
                 secretId: null,
                 secretKey: null,
                 error: '',
-        }
+            }
         },
 
         methods: {
@@ -55,18 +55,14 @@
                 axios.post('/connect/set', {
                     secretId: this.secretId,
                     secretKey: this.secretKey,
-                }).then(function (response) {
-                    console.log(response.data);
-                    window.location.href = "/synсronization";
-                    this.sending = false;
-                }).catch(function (e) {
-                    currentObj.sending = false;
-                    if (e.response.status === 500) {
-                        e.response.data = 'Internal Server Error';
-                    }
-                    currentObj.error = e.response.data;
+                })
+                    .then(response => {
+                        console.log(response.data);
+                        window.location.href = "/synсronization";
+                    }).catch(e => {
                     console.log(e.response.data);
-
+                    currentObj.error = e.response.data;
+                    this.sending = false;
                 });
             }
         }

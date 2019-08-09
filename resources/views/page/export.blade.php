@@ -7,10 +7,9 @@
         <export
         gists-description="Выберите сущность для экспорта"
         gists-title="Сущность"
-        gists-select-title="Выберите сущность"
         books-description="Выберите книгу SendPulse"
         books-title="Книга"
-        books-select-title="Выберите книгу"
+        fields-title="Поля для экспорта"
         btn-title="Export"
         ></export>
     </div>

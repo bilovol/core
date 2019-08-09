@@ -20,7 +20,6 @@ Route::prefix('/connect')->group(function () {
     Route::get('/', function () {
         return view('page.connect');
     })->middleware('valid-connect');
-    Route::get('/get', 'ConnectController@getConnect')->middleware('valid-connect');
     Route::post('/set', 'ConnectController@setConnect')->middleware('valid-connect');
     Route::get('/drop', 'ConnectController@disconnect')->middleware('valid-connect');
 });
@@ -33,6 +32,7 @@ Route::prefix('/synсronization')->group(function () {
     })->middleware('valid-connect')->middleware('check-sp-connect');
     Route::get('/get', 'SyncController@getSync')->middleware('valid-connect');
     Route::post('/set', 'SyncController@setSync')->middleware('valid-connect');
+    Route::post('/delete','SyncController@deleteSync')->middleware('valid-connect');
 });
 
 

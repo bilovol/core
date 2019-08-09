@@ -51,6 +51,7 @@
             tableBookTitle: String,
             tableFieldsTitle: String,
             btnAddEventTitle: String,
+            booksSelectTitle: String,
         },
 
         data() {
@@ -70,6 +71,7 @@
 
         methods: {
             fetchData() {
+                let currentObj = this;
                 axios.get('/synсronization/get').then(response => {
                     this.events = response.data.events;
                     this.activeEvents = response.data.activeEvents;
@@ -77,7 +79,7 @@
                     this.books = response.data.books;
                     this.loading = false;
                 }).catch(function (e) {
-                    this.loading = false;
+                    currentObj.loading = false;
                     console.log(e.response);
                 });
             },

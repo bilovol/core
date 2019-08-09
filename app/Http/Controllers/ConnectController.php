@@ -10,42 +10,42 @@ use App\Models\Connect,
 
 class ConnectController extends Controller
 {
-    public function getConnect(Request $request)
-    {
 
-        $SPConnect = Connect::where('id', 1)->first();
-
-        $data['secretKey'] = $SPConnect->secretKey;
-        $data['secretId'] = $SPConnect->secretId;
-
-        return response($data, 200);
-    }
-
+    /**
+     * set SP connect
+     * @param Request $request
+     * @return \Illuminate\Contracts\Routing\ResponseFactory|\Illuminate\Http\Response
+     */
     public function setConnect(Request $request)
     {
-        $SPConnect = Connect::where('id', 1)->first();
+        $connect = $request->get('connect');
 
         try {
             new ApiClient($request->secretId, $request->secretKey, new SessionStorage());
-            $SPConnect->secretId = $request->secretId;
-            $SPConnect->secretKey = $request->secretKey;
-            $SPConnect->save();
+
+            $connect->secretId = $request->secretId;
+            $connect->secretKey = $request->secretKey;
+            $connect->save();
 
         } catch (Exception $e) {
             return response($e->getMessage(), 403);
         }
 
-
         return response('Done!');
     }
 
+    /**
+     * disable SP connnect
+     * @param Request $request
+     * @return \Illuminate\Http\RedirectResponse|\Illuminate\Routing\Redirector
+     */
     public function disconnect(Request $request)
     {
-        $SPConnect = $request->get('connect');
+        $connect = $request->get('connect');
 
-        $SPConnect->secretId = null;
-        $SPConnect->secretKey = null;
-        $SPConnect->save();
+        $connect->secretId = null;
+        $connect->secretKey = null;
+        $connect->save();
 
         return redirect('/connect');
     }

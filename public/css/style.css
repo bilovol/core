@@ -201,3 +201,11 @@ tr > td:last-child {
     padding: 3rem;
     border-radius: 7px;
 }
+
+.error {
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    margin: 0;
+    right: 0px;
+}

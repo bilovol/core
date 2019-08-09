@@ -1909,10 +1909,8 @@ __webpack_require__.r(__webpack_exports__);
   props: {
     gistsDescription: String,
     gistsTitle: String,
-    gistsSelectTitle: String,
     booksDescription: String,
     booksTitle: String,
-    booksSelectTitle: String,
     fieldsTitle: String,
     btnTitle: String
   },
@@ -2045,6 +2043,8 @@ __webpack_require__.r(__webpack_exports__);
   },
   methods: {
     save: function save() {
+      var _this = this;
+
       this.sending = true;
       var currentObj = this;
       axios.post('/connect/set', {
@@ -2053,16 +2053,10 @@ __webpack_require__.r(__webpack_exports__);
       }).then(function (response) {
         console.log(response.data);
         window.location.href = "/synсronization";
-        this.sending = false;
       })["catch"](function (e) {
-        currentObj.sending = false;
-
-        if (e.response.status === 500) {
-          e.response.data = 'Internal Server Error';
-        }
-
-        currentObj.error = e.response.data;
         console.log(e.response.data);
+        currentObj.error = e.response.data;
+        _this.sending = false;
       });
     }
   }
@@ -2127,11 +2121,13 @@ __webpack_require__.r(__webpack_exports__);
 //
 //
 //
+//
+//
 /* harmony default export */ __webpack_exports__["default"] = ({
   props: {
     event: Object,
     //title,fields,activeBook
-    books: Object,
+    books: Array,
     fields: Array
   },
   data: function data() {
@@ -2139,7 +2135,10 @@ __webpack_require__.r(__webpack_exports__);
       changed: false,
       availableFields: [],
       fieldsStorage: [],
-      eventFields: this.event.fields
+      eventFields: this.event.fields,
+      selectedBook: null,
+      visible: true,
+      error: null
     };
   },
   created: function created() {
@@ -2159,6 +2158,7 @@ __webpack_require__.r(__webpack_exports__);
 
       return newField;
     });
+    this.selectedBook = this.event.activeBook;
   },
   computed: {
     selectedFields: function selectedFields() {
@@ -2170,6 +2170,19 @@ __webpack_require__.r(__webpack_exports__);
       return this.fieldsStorage.filter(function (field) {
         return !field.selected;
       });
+    },
+    activeBookTitle: function activeBookTitle() {
+      var _this2 = this;
+
+      var selectedBook = this.books.filter(function (book) {
+        return book.id === parseInt(_this2.selectedBook);
+      })[0];
+
+      if (selectedBook) {
+        return selectedBook.name;
+      } else {
+        return '---';
+      }
     }
   },
   methods: {
@@ -2183,23 +2196,53 @@ __webpack_require__.r(__webpack_exports__);
       this.changed = true;
     },
     save: function save() {
-      var _this2 = this;
+      var _this3 = this;
 
+      var currentObj = this;
       axios.post('/synсronization/set', {
         activeFields: this.fieldsStorage.filter(function (field) {
           return field.selected;
         }),
-        activeBook: this.activeBook,
-        event: this.event
+        selectedBook: this.selectedBook,
+        eventId: this.event.id,
+        eventKey: this.event.key,
+        eventTitle: this.event.title
       }).then(function (response) {
+        _this3.event.id = response.data;
         console.log(response.data);
-        _this2.changed = false;
+        _this3.changed = false;
       })["catch"](function (e) {
-        console.log(e.response.data);
+        currentObj.error = e.response.data;
+
+        _this3.hideError();
       });
     },
     remove: function remove() {
-      this.event.splice(1, 1);
+      var _this4 = this;
+
+      console.log('remove' + this.event.id);
+
+      if (this.event.id) {
+        var currentObj = this;
+        axios.post('/synсronization/delete', {
+          eventId: this.event.id
+        }).then(function (response) {
+          console.log(response.data);
+          _this4.visible = false;
+        })["catch"](function (e) {
+          currentObj.error = e.response.data;
+
+          _this4.hideError();
+        });
+      } else {
+        this.visible = false;
+      }
+    },
+    hideError: function hideError() {
+      var currentObj = this;
+      setTimeout(function () {
+        currentObj.error = null;
+      }, 3000);
     }
   }
 });
@@ -2267,7 +2310,8 @@ __webpack_require__.r(__webpack_exports__);
     tableEventTitle: String,
     tableBookTitle: String,
     tableFieldsTitle: String,
-    btnAddEventTitle: String
+    btnAddEventTitle: String,
+    booksSelectTitle: String
   },
   data: function data() {
     return {
@@ -2287,6 +2331,7 @@ __webpack_require__.r(__webpack_exports__);
     fetchData: function fetchData() {
       var _this = this;
 
+      var currentObj = this;
       axios.get('/synсronization/get').then(function (response) {
         _this.events = response.data.events;
         _this.activeEvents = response.data.activeEvents;
@@ -2294,7 +2339,7 @@ __webpack_require__.r(__webpack_exports__);
         _this.books = response.data.books;
         _this.loading = false;
       })["catch"](function (e) {
-        this.loading = false;
+        currentObj.loading = false;
         console.log(e.response);
       });
     },
@@ -38293,7 +38338,7 @@ var render = function() {
                   _c(
                     "option",
                     { attrs: { value: "", disabled: "", selected: "" } },
-                    [_vm._v(_vm._s(_vm.gistsSelectTitle))]
+                    [_vm._v("---")]
                   ),
                   _vm._v(" "),
                   _vm._l(_vm.events, function(event) {
@@ -38351,7 +38396,7 @@ var render = function() {
                   _c(
                     "option",
                     { attrs: { value: "", disabled: "", selected: "" } },
-                    [_vm._v(_vm._s(_vm.booksSelectTitle))]
+                    [_vm._v("---")]
                   ),
                   _vm._v(" "),
                   _vm._l(_vm.books, function(book) {
@@ -38547,10 +38592,13 @@ var render = function() {
         ? _c(
             "div",
             {
-              staticClass: "alert alert-warning small",
+              staticClass: "alert alert-warning  error",
               attrs: { role: "alert" }
             },
-            [_vm._v("\n            " + _vm._s(_vm.error) + "\n        ")]
+            [
+              _c("span", { staticClass: "mdi mdi-bell-alert" }),
+              _vm._v(" " + _vm._s(_vm.error) + "\n        ")
+            ]
           )
         : _vm._e(),
       _vm._v(" "),
@@ -38567,7 +38615,7 @@ var render = function() {
             }
           ],
           staticClass: "form-control",
-          attrs: { type: "text", id: "secretId", placeholder: "SecretId" },
+          attrs: { type: "text", id: "secretId" },
           domProps: { value: _vm.secretId },
           on: {
             input: function($event) {
@@ -38593,7 +38641,7 @@ var render = function() {
             }
           ],
           staticClass: "form-control",
-          attrs: { type: "text", id: "secretKey", placeholder: "SecretKey" },
+          attrs: { type: "text", id: "secretKey" },
           domProps: { value: _vm.secretKey },
           on: {
             input: function($event) {
@@ -38659,139 +38707,217 @@ var render = function() {
   var _vm = this
   var _h = _vm.$createElement
   var _c = _vm._self._c || _h
-  return _c("tr", [
-    _c("td", [
-      _c("div", { staticClass: "truncate" }, [
-        _vm.changed
-          ? _c(
-              "button",
-              {
-                staticClass: "btn btn-control btn-delete m-1",
-                attrs: { type: "button" },
-                on: { click: _vm.remove }
-              },
-              [_c("span", { staticClass: "mdi mdi-delete" })]
-            )
-          : _vm._e(),
-        _vm._v("\n            " + _vm._s(_vm.event.title) + "\n        ")
-      ])
-    ]),
-    _vm._v(" "),
-    _c("td", [
-      _vm.changed
-        ? _c(
-            "select",
-            { staticClass: "form-control form-control-sm select-book" },
-            [
-              _c("option", [_vm._v("1")]),
-              _vm._v(" "),
-              _c("option", [_vm._v("2")]),
-              _vm._v(" "),
-              _c("option", [_vm._v("3")]),
-              _vm._v(" "),
-              _c("option", [_vm._v("4")]),
-              _vm._v(" "),
-              _c("option", [_vm._v("5")])
-            ]
-          )
-        : _c("span", { staticClass: "select-book" }, [_vm._v("Книга")])
-    ]),
-    _vm._v(" "),
-    _c(
-      "td",
-      { staticClass: "text-right" },
-      [
-        _c("div", { staticClass: "chip chip-main" }, [_vm._v("email")]),
-        _vm._v(" "),
-        _vm._l(_vm.selectedFields, function(field) {
-          return _c("div", { staticClass: "chip" }, [
-            _vm._v(_vm._s(field.title) + "\n            "),
+  return _vm.visible
+    ? _c("tr", [
+        _c("td", [
+          _c("div", { staticClass: "truncate" }, [
             _vm.changed
-              ? _c("i", {
-                  staticClass: "mdi mdi-close-circle",
+              ? _c(
+                  "button",
+                  {
+                    staticClass: "btn btn-control btn-delete m-1",
+                    attrs: { type: "button" },
+                    on: { click: _vm.remove }
+                  },
+                  [_c("span", { staticClass: "mdi mdi-delete" })]
+                )
+              : _vm._e(),
+            _vm._v("\n            " + _vm._s(_vm.event.title) + "\n        ")
+          ]),
+          _vm._v(" "),
+          _vm.error
+            ? _c(
+                "div",
+                {
+                  staticClass: "alert alert-danger  error",
+                  attrs: { role: "alert" }
+                },
+                [
+                  _c("span", { staticClass: "mdi mdi-bell-alert" }),
+                  _vm._v(" " + _vm._s(_vm.error) + "\n            "),
+                  _vm._m(0)
+                ]
+              )
+            : _vm._e()
+        ]),
+        _vm._v(" "),
+        _c("td", [
+          _vm.changed
+            ? _c(
+                "select",
+                {
+                  directives: [
+                    {
+                      name: "model",
+                      rawName: "v-model",
+                      value: _vm.selectedBook,
+                      expression: "selectedBook"
+                    }
+                  ],
+                  staticClass: "form-control form-control-sm select-book",
                   on: {
-                    click: function($event) {
-                      return _vm.unSelectField(field)
+                    change: function($event) {
+                      var $$selectedVal = Array.prototype.filter
+                        .call($event.target.options, function(o) {
+                          return o.selected
+                        })
+                        .map(function(o) {
+                          var val = "_value" in o ? o._value : o.value
+                          return val
+                        })
+                      _vm.selectedBook = $event.target.multiple
+                        ? $$selectedVal
+                        : $$selectedVal[0]
                     }
                   }
-                })
-              : _vm._e()
-          ])
-        }),
-        _vm._v(" "),
-        _vm.changed
-          ? _c(
-              "button",
-              {
-                staticClass: "btn btn-control ml-1",
-                attrs: {
-                  type: "button",
-                  "data-toggle": "dropdown",
-                  "aria-haspopup": "true",
-                  "aria-expanded": "false"
-                }
-              },
-              [_c("span", { staticClass: "mdi mdi-plus" })]
-            )
-          : _vm._e(),
+                },
+                [
+                  _c(
+                    "option",
+                    { attrs: { value: "", disabled: "", selected: "" } },
+                    [_vm._v("---")]
+                  ),
+                  _vm._v(" "),
+                  _vm._l(_vm.books, function(book) {
+                    return _c(
+                      "option",
+                      {
+                        attrs: { disabled: book.status !== 0 },
+                        domProps: { value: book.id }
+                      },
+                      [
+                        _vm._v(
+                          "\n                " +
+                            _vm._s(book.name) +
+                            "\n            "
+                        )
+                      ]
+                    )
+                  })
+                ],
+                2
+              )
+            : _c("span", { staticClass: "select-book" }, [
+                _vm._v(_vm._s(_vm.activeBookTitle))
+              ])
+        ]),
         _vm._v(" "),
         _c(
-          "div",
-          { staticClass: "dropdown-menu" },
-          _vm._l(_vm.unselectedFields, function(field) {
-            return _c(
-              "li",
-              {
-                staticClass: "dropdown-item",
-                on: {
-                  click: function($event) {
-                    return _vm.selectField(field)
-                  }
-                }
-              },
-              [
-                _vm._v(
-                  "\n                " + _vm._s(field.title) + "\n            "
+          "td",
+          { staticClass: "text-right" },
+          [
+            _c("div", { staticClass: "chip chip-main" }, [_vm._v("email")]),
+            _vm._v(" "),
+            _vm._l(_vm.selectedFields, function(field) {
+              return _c("div", { staticClass: "chip" }, [
+                _vm._v(_vm._s(field.title) + "\n            "),
+                _vm.changed
+                  ? _c("i", {
+                      staticClass: "mdi mdi-close-circle",
+                      on: {
+                        click: function($event) {
+                          return _vm.unSelectField(field)
+                        }
+                      }
+                    })
+                  : _vm._e()
+              ])
+            }),
+            _vm._v(" "),
+            _vm.changed
+              ? _c(
+                  "button",
+                  {
+                    staticClass: "btn btn-control ml-1",
+                    attrs: {
+                      type: "button",
+                      "data-toggle": "dropdown",
+                      "aria-haspopup": "true",
+                      "aria-expanded": "false"
+                    }
+                  },
+                  [_c("span", { staticClass: "mdi mdi-plus" })]
                 )
-              ]
-            )
-          }),
-          0
-        ),
-        _vm._v(" "),
-        _vm.changed
-          ? _c(
-              "button",
-              {
-                staticClass: "btn btn-control btn-save ml-1",
-                attrs: { type: "button" },
-                on: {
-                  click: function($event) {
-                    return _vm.save()
-                  }
-                }
-              },
-              [_c("span", { staticClass: "mdi mdi-content-save" })]
-            )
-          : _c(
-              "button",
-              {
-                staticClass: "btn btn-control ml-1",
-                attrs: { type: "button" },
-                on: {
-                  click: function($event) {
-                    return _vm.edit()
-                  }
-                }
-              },
-              [_c("span", { staticClass: "mdi mdi-pencil" })]
-            )
-      ],
-      2
-    )
-  ])
+              : _vm._e(),
+            _vm._v(" "),
+            _c(
+              "div",
+              { staticClass: "dropdown-menu" },
+              _vm._l(_vm.unselectedFields, function(field) {
+                return _c(
+                  "li",
+                  {
+                    staticClass: "dropdown-item",
+                    on: {
+                      click: function($event) {
+                        return _vm.selectField(field)
+                      }
+                    }
+                  },
+                  [
+                    _vm._v(
+                      "\n                " +
+                        _vm._s(field.title) +
+                        "\n            "
+                    )
+                  ]
+                )
+              }),
+              0
+            ),
+            _vm._v(" "),
+            _vm.changed
+              ? _c(
+                  "button",
+                  {
+                    staticClass: "btn btn-control btn-save ml-1",
+                    attrs: { type: "button" },
+                    on: {
+                      click: function($event) {
+                        return _vm.save()
+                      }
+                    }
+                  },
+                  [_c("span", { staticClass: "mdi mdi-content-save" })]
+                )
+              : _c(
+                  "button",
+                  {
+                    staticClass: "btn btn-control ml-1",
+                    attrs: { type: "button" },
+                    on: {
+                      click: function($event) {
+                        return _vm.edit()
+                      }
+                    }
+                  },
+                  [_c("span", { staticClass: "mdi mdi-pencil" })]
+                )
+          ],
+          2
+        )
+      ])
+    : _vm._e()
 }
-var staticRenderFns = []
+var staticRenderFns = [
+  function() {
+    var _vm = this
+    var _h = _vm.$createElement
+    var _c = _vm._self._c || _h
+    return _c(
+      "button",
+      {
+        staticClass: "close",
+        attrs: {
+          type: "button",
+          "data-dismiss": "alert",
+          "aria-label": "Close"
+        }
+      },
+      [_c("span", { attrs: { "aria-hidden": "true" } }, [_vm._v("×")])]
+    )
+  }
+]
 render._withStripped = true
 
 

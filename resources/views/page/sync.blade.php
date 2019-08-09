@@ -9,6 +9,8 @@
             table-book-title='Книга'
             table-fields-title='Поля'
             btn-add-event-title="Добавить событие"
+
+            books-select-title="booksSelectTitle"
         ></synсronization>
     </div>
 @endsection

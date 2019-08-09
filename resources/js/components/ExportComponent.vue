@@ -13,7 +13,7 @@
                         <label class="input-group-text">{{gistsTitle}}</label>
                     </div>
                     <select class="custom-select" v-model="activeEvent">
-                        <option value="" disabled selected>{{gistsSelectTitle}}</option>
+                        <option value="" disabled selected>---</option>
                         <option v-for="event in events" v-bind:value="event">{{event.title}}</option>
                     </select>
                 </div>
@@ -27,7 +27,7 @@
                         <label class="input-group-text">{{booksTitle}}</label>
                     </div>
                     <select class="custom-select" v-model="selectedBook">
-                        <option value="" disabled selected>{{booksSelectTitle}}</option>
+                        <option value="" disabled selected>---</option>
                         <option v-for="book in books" v-bind:value="book.id" :disabled="book.status !== 0">
                             {{ book.name }}
                         </option>
@@ -71,10 +71,8 @@
         props: {
             gistsDescription: String,
             gistsTitle: String,
-            gistsSelectTitle: String,
             booksDescription: String,
             booksTitle: String,
-            booksSelectTitle: String,
             fieldsTitle: String,
             btnTitle: String,
 
