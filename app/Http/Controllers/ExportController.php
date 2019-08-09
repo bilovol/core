@@ -46,6 +46,9 @@ class ExportController extends Controller
 
     public function doExport(Request $request)
     {
+        Log::debug('doExport:');
+        Log::debug($request->all());
+
         if (empty($request->selectedBook)) {
             return response('empty book', 403);
         }

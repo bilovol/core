@@ -63,7 +63,7 @@ class SyncController extends Controller
      */
     public function setSync(Request $request)
     {
-        Log::debug('Sync set:');
+        Log::debug('setSync:');
         Log::debug($request->all());
 
         $connect = $request->get('connect');
@@ -100,7 +100,7 @@ class SyncController extends Controller
      */
     public function deleteSync(Request $request)
     {
-        Log::debug('Sync delete:');
+        Log::debug('deleteSync:');
         Log::debug($request->all());
 
         $connect = $request->get('connect');
