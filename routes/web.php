@@ -46,4 +46,4 @@ Route::prefix('/export')->group(function () {
 });
 
 //BX24
-Route::post('/login','BitrixController@login');
+Route::get('/login','BitrixController@login');
