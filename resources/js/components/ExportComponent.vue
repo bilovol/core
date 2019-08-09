@@ -6,6 +6,12 @@
             </div>
         </div>
         <div v-else class="card">
+            <div v-if="error" class="alert alert-danger msg-top" role="alert">
+                <span class="mdi mdi-bell-alert"></span> {{error}}
+            </div>
+            <div v-if="success" class="alert alert-success msg-top" role="alert">
+                <span class="mdi mdi-bell-alert"></span> {{success}}
+            </div>
             <div class="form-group">
                 <small class="form-text text-muted">{{gistsDescription}}</small>
                 <div class="input-group mb-3">
@@ -81,12 +87,15 @@
             return {
                 loading: true,
                 sending: false,
+                error: null,
+                success: null,
                 books: [],
                 selectedBook: '',
                 events: [],
                 activeEvent: {
                     fields: []
                 },
+
             }
         },
 
@@ -121,15 +130,20 @@
 
             sendForm() {
                 this.sending = true;
+                let currentObj = this;
                 axios.post('/export/set', {
                     event: this.activeEvent,
                     selectedBook: this.selectedBook,
                 }).then(response => {
                     console.log(response.data);
+                    currentObj.success = response.data;
                     this.sending = false;
+                    this.hideError();
                 }).catch(e => {
                     console.log(e.response.data);
+                    currentObj.error = e.response.data;
                     this.sending = false;
+                    this.hideError();
                 });
             },
 
@@ -144,6 +158,14 @@
             selectField(field) {
                 this.$set(field, 'selected', true);
             },
+
+            hideError() {
+                let currentObj = this;
+                setTimeout(function () {
+                    currentObj.success = null;
+                    currentObj.error = null;
+                }, 3000);
+            }
         }
     }
 </script>

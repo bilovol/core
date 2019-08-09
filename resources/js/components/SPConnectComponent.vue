@@ -8,7 +8,7 @@
                     <a class="link" target="_blank" href="https://login.sendpulse.com/settings/#api">https://login.sendpulse.com/settings/#api</a>
                 </small>
             </div>
-            <div v-if="error" class="alert alert-warning  error" role="alert">
+            <div v-if="error" class="alert alert-warning  msg" role="alert">
                 <span class="mdi mdi-bell-alert"></span> {{error}}
             </div>
             <div class="form-group pt-2">

@@ -7,11 +7,8 @@
                 </button>
                 {{event.title}}
             </div>
-            <div v-if="error" class="alert alert-danger  error" role="alert">
+            <div v-if="error" class="alert alert-danger  msg" role="alert">
                 <span class="mdi mdi-bell-alert"></span> {{error}}
-                <button type="button" class="close" data-dismiss="alert" aria-label="Close">
-                    <span aria-hidden="true">&times;</span>
-                </button>
             </div>
         </td>
         <td>
@@ -128,7 +125,6 @@
                     eventTitle: this.event.title,
                 }).then(response => {
                     this.event.id = response.data;
-                    console.log(response.data);
                     this.changed = false;
                 }).catch(e => {
                     currentObj.error = e.response.data;
@@ -137,13 +133,11 @@
             },
 
             remove() {
-                console.log('remove' + this.event.id);
                 if (this.event.id) {
                     let currentObj = this;
                     axios.post('/synсronization/delete', {
                         eventId: this.event.id,
                     }).then(response => {
-                        console.log(response.data);
                         this.visible = false;
                     }).catch(e => {
                         currentObj.error = e.response.data;

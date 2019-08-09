@@ -202,10 +202,18 @@ tr > td:last-child {
     border-radius: 7px;
 }
 
-.error {
+.msg {
     position: absolute;
     bottom: 0;
     left: 0;
     margin: 0;
     right: 0px;
+}
+
+.msg-top {
+    position: absolute;
+    top: 0;
+    left: 0;
+    margin: 0;
+    right: 0;
 }

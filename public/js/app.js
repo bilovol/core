@@ -1905,6 +1905,12 @@ __webpack_require__.r(__webpack_exports__);
 //
 //
 //
+//
+//
+//
+//
+//
+//
 /* harmony default export */ __webpack_exports__["default"] = ({
   props: {
     gistsDescription: String,
@@ -1918,6 +1924,8 @@ __webpack_require__.r(__webpack_exports__);
     return {
       loading: true,
       sending: false,
+      error: null,
+      success: null,
       books: [],
       selectedBook: '',
       events: [],
@@ -1961,15 +1969,22 @@ __webpack_require__.r(__webpack_exports__);
       var _this2 = this;
 
       this.sending = true;
+      var currentObj = this;
       axios.post('/export/set', {
         event: this.activeEvent,
         selectedBook: this.selectedBook
       }).then(function (response) {
         console.log(response.data);
+        currentObj.success = response.data;
         _this2.sending = false;
+
+        _this2.hideError();
       })["catch"](function (e) {
         console.log(e.response.data);
+        currentObj.error = e.response.data;
         _this2.sending = false;
+
+        _this2.hideError();
       });
     },
     selectEvent: function selectEvent(event) {
@@ -1980,6 +1995,13 @@ __webpack_require__.r(__webpack_exports__);
     },
     selectField: function selectField(field) {
       this.$set(field, 'selected', true);
+    },
+    hideError: function hideError() {
+      var currentObj = this;
+      setTimeout(function () {
+        currentObj.success = null;
+        currentObj.error = null;
+      }, 3000);
     }
   }
 });
@@ -2120,9 +2142,6 @@ __webpack_require__.r(__webpack_exports__);
 //
 //
 //
-//
-//
-//
 /* harmony default export */ __webpack_exports__["default"] = ({
   props: {
     event: Object,
@@ -2209,7 +2228,6 @@ __webpack_require__.r(__webpack_exports__);
         eventTitle: this.event.title
       }).then(function (response) {
         _this3.event.id = response.data;
-        console.log(response.data);
         _this3.changed = false;
       })["catch"](function (e) {
         currentObj.error = e.response.data;
@@ -2220,14 +2238,11 @@ __webpack_require__.r(__webpack_exports__);
     remove: function remove() {
       var _this4 = this;
 
-      console.log('remove' + this.event.id);
-
       if (this.event.id) {
         var currentObj = this;
         axios.post('/synсronization/delete', {
           eventId: this.event.id
         }).then(function (response) {
-          console.log(response.data);
           _this4.visible = false;
         })["catch"](function (e) {
           currentObj.error = e.response.data;
@@ -38294,6 +38309,34 @@ var render = function() {
     _vm.loading
       ? _c("div", { staticClass: "text-center" }, [_vm._m(0)])
       : _c("div", { staticClass: "card" }, [
+          _vm.error
+            ? _c(
+                "div",
+                {
+                  staticClass: "alert alert-danger msg-top",
+                  attrs: { role: "alert" }
+                },
+                [
+                  _c("span", { staticClass: "mdi mdi-bell-alert" }),
+                  _vm._v(" " + _vm._s(_vm.error) + "\n        ")
+                ]
+              )
+            : _vm._e(),
+          _vm._v(" "),
+          _vm.success
+            ? _c(
+                "div",
+                {
+                  staticClass: "alert alert-success msg-top",
+                  attrs: { role: "alert" }
+                },
+                [
+                  _c("span", { staticClass: "mdi mdi-bell-alert" }),
+                  _vm._v(" " + _vm._s(_vm.success) + "\n        ")
+                ]
+              )
+            : _vm._e(),
+          _vm._v(" "),
           _c("div", { staticClass: "form-group" }, [
             _c("small", { staticClass: "form-text text-muted" }, [
               _vm._v(_vm._s(_vm.gistsDescription))
@@ -38592,7 +38635,7 @@ var render = function() {
         ? _c(
             "div",
             {
-              staticClass: "alert alert-warning  error",
+              staticClass: "alert alert-warning  msg",
               attrs: { role: "alert" }
             },
             [
@@ -38729,13 +38772,12 @@ var render = function() {
             ? _c(
                 "div",
                 {
-                  staticClass: "alert alert-danger  error",
+                  staticClass: "alert alert-danger  msg",
                   attrs: { role: "alert" }
                 },
                 [
                   _c("span", { staticClass: "mdi mdi-bell-alert" }),
-                  _vm._v(" " + _vm._s(_vm.error) + "\n            "),
-                  _vm._m(0)
+                  _vm._v(" " + _vm._s(_vm.error) + "\n        ")
                 ]
               )
             : _vm._e()
@@ -38899,25 +38941,7 @@ var render = function() {
       ])
     : _vm._e()
 }
-var staticRenderFns = [
-  function() {
-    var _vm = this
-    var _h = _vm.$createElement
-    var _c = _vm._self._c || _h
-    return _c(
-      "button",
-      {
-        staticClass: "close",
-        attrs: {
-          type: "button",
-          "data-dismiss": "alert",
-          "aria-label": "Close"
-        }
-      },
-      [_c("span", { attrs: { "aria-hidden": "true" } }, [_vm._v("×")])]
-    )
-  }
-]
+var staticRenderFns = []
 render._withStripped = true
 
 
