@@ -2,7 +2,7 @@
 
 namespace App\Models\Interfaces;
 
-interface ConnectInterface
+interface EventInterface
 {
     /**
      *

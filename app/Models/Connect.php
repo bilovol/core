@@ -2,10 +2,9 @@
 
 namespace App\Models;
 
-use App\Models\Interfaces\ConnectInterface;
 use Illuminate\Database\Eloquent\Model;
 
-class Connect extends Model implements ConnectInterface
+class Connect extends Model
 {
     protected $table = 'connects';
     protected $guarded = [];
