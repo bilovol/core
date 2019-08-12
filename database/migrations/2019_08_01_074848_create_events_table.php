@@ -20,11 +20,11 @@ class CreateEventsTable extends Migration
         Schema::create($this->table, function (Blueprint $table) {
             $table->bigIncrements('id');
             $table->integer('connect_id');
-            $table->boolean('active')->default(true);
             $table->string('key');
             $table->string('title');
-            $table->string('activeBook');
+            $table->string('active_book');
             $table->json('fields');
+            $table->boolean('status')->default(true);
             $table->timestamps();
         });
     }

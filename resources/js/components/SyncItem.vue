@@ -80,7 +80,7 @@
                 return newField;
             });
 
-            this.selectedBook = this.event.activeBook;
+            this.selectedBook = this.event.active_book;
         },
 
         computed: {

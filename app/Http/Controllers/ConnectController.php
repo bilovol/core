@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\Connect,
+    App\Repositories\ConnectRepository,
     Illuminate\Http\Request,
     Sendpulse\RestApi\ApiClient,
     Sendpulse\RestApi\Storage\SessionStorage,
@@ -18,15 +19,10 @@ class ConnectController extends Controller
      */
     public function setConnect(Request $request)
     {
-        $connect = $request->get('connect');
-
+        $sessionConnectId = 1;
         try {
             new ApiClient($request->secretId, $request->secretKey, new SessionStorage());
-
-            $connect->secretId = $request->secretId;
-            $connect->secretKey = $request->secretKey;
-            $connect->save();
-
+            (new ConnectRepository())->setSPConnectById(1, $request->secretId, $request->secretKey);
         } catch (Exception $e) {
             return response($e->getMessage(), 403);
         }
@@ -41,12 +37,7 @@ class ConnectController extends Controller
      */
     public function disconnect(Request $request)
     {
-        $connect = $request->get('connect');
-
-        $connect->secretId = null;
-        $connect->secretKey = null;
-        $connect->save();
-
+        (new ConnectRepository())->deleteSPConnectById(1);
         return redirect('/connect');
     }
 }

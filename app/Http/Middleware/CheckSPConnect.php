@@ -2,6 +2,7 @@
 
 namespace App\Http\Middleware;
 
+use App\Repositories\ConnectRepository;
 use Closure;
 use Exception;
 use Sendpulse\RestApi\ApiClient;
@@ -12,9 +13,10 @@ class CheckSPConnect
 
     public function handle($request, Closure $next)
     {
-        $connect = $request->get('connect');
+        $sessionConnectId = 1;
+        $connect = (new ConnectRepository())->getSpConnectById($sessionConnectId);
         try {
-            (new ApiClient($connect->secretId, $connect->secretKey, new SessionStorage()))->listAddressBooks();
+            (new ApiClient($connect['secret_id'], $connect['secret_key'], new SessionStorage()))->listAddressBooks();
         } catch (Exception $e) {
             return redirect('/connect');
         }

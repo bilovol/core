@@ -2177,7 +2177,7 @@ __webpack_require__.r(__webpack_exports__);
 
       return newField;
     });
-    this.selectedBook = this.event.activeBook;
+    this.selectedBook = this.event.active_book;
   },
   computed: {
     selectedFields: function selectedFields() {

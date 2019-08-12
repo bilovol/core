@@ -22,8 +22,8 @@ class CreateConnectsTable extends Migration
     {
         Schema::create($this->table, function (Blueprint $table) {
             $table->bigIncrements('id');
-            $table->string('secretId')->nullable();
-            $table->string('secretKey')->nullable();
+            $table->string('secret_id')->nullable();
+            $table->string('secret_key')->nullable();
             $table->timestamps();
         });
     }

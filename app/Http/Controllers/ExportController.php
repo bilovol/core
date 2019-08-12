@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Repositories\ConnectRepository;
 use Illuminate\Http\Request,
     Sendpulse\RestApi\ApiClient,
     Sendpulse\RestApi\Storage\SessionStorage,
@@ -12,10 +13,12 @@ class ExportController extends Controller
 {
     public function getData(Request $request)
     {
-        $connect = $request->get('connect');
+        $id = 1;
+        $data = [];
+        $connect = (new ConnectRepository())->getSpConnectById($id);
 
         try {
-            $data['books'] = (new ApiClient($connect->secretId, $connect->secretKey, new SessionStorage()))->listAddressBooks();
+            $data['books'] = (new ApiClient($connect['secret_id'], $connect['secret_key'], new SessionStorage()))->listAddressBooks();
         } catch (Exception $e) {
             return response($e->getMessage(), 403);
         }

@@ -9,6 +9,8 @@ use App\Models\Connect,
     Sendpulse\RestApi\Storage\SessionStorage,
     Illuminate\Support\Facades\Log,
     Exception;
+use App\Repositories\ConnectRepository;
+use App\Repositories\EventRepository;
 
 class SyncController extends Controller
 {
@@ -19,11 +21,11 @@ class SyncController extends Controller
      **/
     public function getSync(Request $request)
     {
-        $connect = $request->get('connect');
         $data['books'] = [];
+        $connect = (new ConnectRepository())->getSpConnectById(1);
 
         try {
-            $data['books'] = (new ApiClient($connect->secretId, $connect->secretKey, new SessionStorage()))->listAddressBooks();
+            $data['books'] = (new ApiClient($connect['secret_id'], $connect['secret_key'], new SessionStorage()))->listAddressBooks();
         } catch (Exception $e) {
             return response($e->getMessage(), 403);
         }
@@ -36,7 +38,7 @@ class SyncController extends Controller
         ];
 
         //select events from connect
-        $data['activeEvents'] = $connect->events()->get();
+        $data['activeEvents'] = (new EventRepository)->getByListByConnectId(1);
         //all fields
         $data['fields'] = [
             [
@@ -66,32 +68,32 @@ class SyncController extends Controller
         Log::debug('setSync:');
         Log::debug($request->all());
 
-        $connect = $request->get('connect');
+        $connectId = 1;
+        $eventId = null;
 
         if (empty($request->selectedBook)) {
             return response('Укажите книгу!', 403);
         }
 
-//        update event
         if ($request->has('eventId')) {
-            $event = $connect->events()
-                ->where('id', $request->eventId)
-                ->first();
-            $event->activeBook = $request->selectedBook;
-            $event->fields = $this->validateFields($request->activeFields);
-            $event->save();
+            // update event
+            $eventId = (new EventRepository)->updateById((int)$request->eventId, [
+                'fields' => $request->activeFields,
+                'active_book' => $request->selectedBook,
+            ]);
 
-            return response($event->id);
+        } else {
+            // new event
+            $eventId = (new EventRepository())->createByConnectId($connectId,
+                [
+                    'key' => $request->eventKey,
+                    'title' => $request->eventTitle,
+                    'active_book' => $request->selectedBook,
+                    'fields' => $request->activeFields,
+                ]);
         }
-//        new event
-        $event = $connect->events()->create([
-            'key' => $request->eventKey,
-            'title' => $request->eventTitle,
-            'activeBook' => $request->selectedBook,
-            'fields' => $this->validateFields($request->activeFields),
-        ]);
 
-        return response($event->id);
+        return response($eventId);
     }
 
     /** Delete event from sync
@@ -103,30 +105,11 @@ class SyncController extends Controller
         Log::debug('deleteSync:');
         Log::debug($request->all());
 
-        $connect = $request->get('connect');
-
-        if (!$request->has('eventId')) {
-            return response('Erorr empty eventId', 404);
+        if ((new EventRepository())->deleteById($request->eventId)) {
+            return response('Done!');
         }
 
-        $connect->events()->where('id', $request->eventId)->delete();
-
-        return response('Done');
+        return response('404', 404);
     }
 
-    /**
-     * validate fields for save event
-     * @param  $fields array
-     * @return array
-     */
-    private function validateFields($fields)
-    {
-
-        $result = [];
-        foreach ($fields as $field) {
-            $result[] = $field['key'];
-        }
-
-        return $result;
-    }
 }
